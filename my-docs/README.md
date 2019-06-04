@@ -1,14 +1,21 @@
+<!-- TOC -->
+
+- [Fastai-v2 Docs on Each Item](#fastai-v2-docs-on-each-item)
+  - [local.core module](#localcore-module)
+
+<!-- /TOC -->
+
 # Fastai-v2 Docs on Each Item
 
 - search "doc_improve:" with vim Ag to see my proposed source improvements in the source files below
 - search "make_uncool:" with vim Ag to see how clean and compact official source code is and how to make it uncool for debugging
 - search "not_finished": for official source but unfinished properly
 
+## local.core module
+
 [core.newchk](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.newchk.py)
 > enable a class to create a new instance (normal) or return the input if the input is already an instance (new feature)
-![core.newchk](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/images/core.newchk.png =100x50)
-
-<img src="https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/images/core.newchk.png" alt="drawing" width="700"/>
+<img src="https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/images/core.newchk.png" alt="newchk" width="700"/>
 
 [core.patch](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.patch.py)
 > enable a function to add itself to the Class of its first parameter
