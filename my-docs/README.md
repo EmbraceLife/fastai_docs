@@ -4,22 +4,21 @@
   - [key terms to note](#key-terms-to-note)
   - [local.core module](#localcore-module)
     - [newchk](#newchk)
-    - [[core.patch](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.patch.py)](#corepatchhttpsgithubcomembracelifefastai_docsblobmy-v2my-docscorepatchpy)
-    - [[core.chk](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.chk.py)](#corechkhttpsgithubcomembracelifefastai_docsblobmy-v2my-docscorechkpy)
-    - [[core.ls](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.ls.py)](#corelshttpsgithubcomembracelifefastai_docsblobmy-v2my-docscorelspy)
-    - [[core.tensor](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.tensor.py)](#coretensorhttpsgithubcomembracelifefastai_docsblobmy-v2my-docscoretensorpy)
-    - [[core.tensor.ndim](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.tensor.ndim.py)](#coretensorndimhttpsgithubcomembracelifefastai_docsblobmy-v2my-docscoretensorndimpy)
-    - [[core.add_docs](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.add_docs.py)](#coreadd_docshttpsgithubcomembracelifefastai_docsblobmy-v2my-docscoreadd_docspy)
-    - [[core.docs](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.docs.py)](#coredocshttpsgithubcomembracelifefastai_docsblobmy-v2my-docscoredocspy)
-    - [[core.custom_dir, core.GetAttr](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.getattr.py)](#corecustom_dir-coregetattrhttpsgithubcomembracelifefastai_docsblobmy-v2my-docscoregetattrpy)
-    - [[core.is_iter](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.is_iter.py)](#coreis_iterhttpsgithubcomembracelifefastai_docsblobmy-v2my-docscoreis_iterpy)
-    - [[core.coll_repr](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.coll_repr.py)](#corecoll_reprhttpsgithubcomembracelifefastai_docsblobmy-v2my-docscorecoll_reprpy)
-    - [[core._listify](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core._listify.py)](#core_listifyhttpsgithubcomembracelifefastai_docsblobmy-v2my-docscore_listifypy)
-    - [[core._mask2idxs](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core._mask2idxs.py)](#core_mask2idxshttpsgithubcomembracelifefastai_docsblobmy-v2my-docscore_mask2idxspy)
-    - [[core.L](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.L.py)](#corelhttpsgithubcomembracelifefastai_docsblobmy-v2my-docscorelpy)
+    - [patch](#patch)
+    - [chk](#chk)
+    - [ls](#ls)
+    - [tensor](#tensor)
+    - [tensor.ndim](#tensorndim)
+    - [add_docs](#add_docs)
+    - [docs](#docs)
+    - [custom_dir, GetAttr](#custom_dir-getattr)
+    - [is_iter](#is_iter)
+    - [coll_repr](#coll_repr)
+    - [`_listify`](#_listify)
+    - [`_mask2idxs`](#_mask2idxs)
+    - [L](#l)
 
 <!-- /TOC -->
-
 # Fastai-v2 Docs on Each Item
 
 ## key terms to note
@@ -84,6 +83,6 @@
 [core._mask2idxs](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core._mask2idxs.py)
 > make indexes or binary indexes
 
-### L 
+### L
 [core.L](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.L.py)
 > the most easy-to-use and powerful list class with all the utils needed
