@@ -29,45 +29,40 @@ def newchk(cls):
     return cls
 
 ################################
-# a simple class
+# Usually the world works like this
 class _T():
     "Testing"
     def __init__(self, o=None): self.foo = getattr(o,'foo',0) + 1
 
-################################
-# apply decorator to the class above
-_T = newchk(_T)
-
-#################################
-# run the decorated class
-# create a new instance of _T
-t = _T(1)
-# since t is an instance, so just return t rather than create anew
-t2 = _T(t)
-test_eq(t2, t)
-
+t1 = _T(1)
+t1.foo
+t2 = _T(t1)
+t2.foo
+t1 = _T(1)
+t1 = _T(1)
 #################################
 # decorator with syntatic sugar
+# with a little help
 @newchk
 class _T():
     "Testing"
     def __init__(self, o=None): self.foo = getattr(o,'foo',0) + 1
 
+# We can make the world a better place
+t1 = _T(1)
+t1.foo
+t2 = _T(t1)
+t2.foo
+t1 = _T(1)
+t1 = _T(1)
+################################
+# make_uncool
+# apply decorator to the class above
+_T = newchk(_T)
+
 t = _T(1)
-test_eq(t.foo,1)
+# since t is an instance, so just return t rather than create anew
 t2 = _T(t)
-test_eq(t2.foo,1)
-test_eq(t, t2)
 
 #################################
-# create new instance without decorator 
-class _T2():
-    def __init__(self, o): self.foo = getattr(o,'foo',0) + 1
-
-t = _T2(1)
-test_eq(t.foo,1)
-t2 = _T2(t)
-test_eq(t2.foo,2)
-
-test_eq(_T.__doc__, "Testing")
-test_eq(str(inspect.signature(_T)), '(o=None)')
+str(inspect.signature(_T))

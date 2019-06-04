@@ -6,6 +6,7 @@
 
 [core.newchk](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.newchk.py)
 > enable Class_T(t) return the same instance, rather than creating new instance, if t is an instance of the Class_T
+![](images/core.newchk)
 
 [core.patch](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.patch.py)
 > enable a function to add itself to the Class of its first parameter

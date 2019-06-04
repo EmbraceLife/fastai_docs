@@ -1,7 +1,7 @@
 from local.test import *
 from local.imports import *
 from local.notebook.showdoc import show_doc
-from local.core import newchk, GetAttr, add_docs, coll_repr
+from local.core import newchk, GetAttr, add_docs, coll_repr, tensor
 from local.core import _listify, _mask2idxs, is_iter
 # from local.core import *
 
@@ -216,14 +216,16 @@ t = t.mapped(operator.neg)
 L([1,2,3])
 L([1,2,3]).items
 L(L([1,2,3]))
-L('abc')
+L('abc') # a string will be a single item
 L('abc').items
-L(range(0,3))
-L(o for o in range(0,3))
-L(tensor(0))
-L([tensor(0),tensor(1)])
-L(tensor([0.,1.1]))
+L(range(0,3)) # _listify(range(0,3)) make it a list
+L(o for o in range(0,3)) # _listify(a_generator) make it a list
+L(tensor(0)) # a tensor is a single item
+L([tensor(0),tensor(1)]) # two tensors in a list make it two items
+L(tensor([0.,1.1])) # a single item tensor with two values inside
 L(tensor([0.,1.1]), use_list=True)
+# list(tensor([0.,1.1])) make it two separate tensors
+# make a tensor with two values into two items
 
 ############################
 # to notebook
@@ -261,8 +263,8 @@ t = L(range(12))
 t[1,2]                # implicit tuple
 t[[1,2]]              # list
 t[:3]               # slice
-t[[False]*11 + [True]] # mask
-t[tensor(3)]
+t[[False]*11 + [True]] # mask is to use True and False list to get item
+t[tensor(3)] # a tensor can be used to get item too
 
 # to notebook
 # t = L(range(12))
