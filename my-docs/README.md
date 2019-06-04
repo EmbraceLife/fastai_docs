@@ -6,7 +6,7 @@
 
 [core.newchk](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.newchk.py)
 > enable a class to create a new instance (normal) or return the input if the input is already an instance (new feature)
-![core.newchk](/images/core.newchk.png)
+![core.newchk](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/images/core.newchk.png)
 
 [core.patch](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.patch.py)
 > enable a function to add itself to the Class of its first parameter
