@@ -3,7 +3,7 @@
 - [Fastai-v2 Docs on Each Item](#fastai-v2-docs-on-each-item)
   - [key terms to note](#key-terms-to-note)
   - [local.core module](#localcore-module)
-    - [[core.newchk](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.newchk.py)](#corenewchkhttpsgithubcomembracelifefastai_docsblobmy-v2my-docscorenewchkpy)
+    - [newchk](#newchk)
     - [[core.patch](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.patch.py)](#corepatchhttpsgithubcomembracelifefastai_docsblobmy-v2my-docscorepatchpy)
     - [[core.chk](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.chk.py)](#corechkhttpsgithubcomembracelifefastai_docsblobmy-v2my-docscorechkpy)
     - [[core.ls](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.ls.py)](#corelshttpsgithubcomembracelifefastai_docsblobmy-v2my-docscorelspy)
@@ -29,7 +29,8 @@
 
 ## local.core module
 
-### [core.newchk](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.newchk.py)
+### newchk
+[core.newchk](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.newchk.py)
 > enable a class to create a new instance (normal) or return the input if the input is already an instance (new feature)
 <img src="https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/images/core.newchk.png" alt="newchk" width="700"/>
 
