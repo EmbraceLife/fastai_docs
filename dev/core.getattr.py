@@ -31,7 +31,7 @@ class GetAttr:
             return getattr(self.default, k)
         raise AttributeError(k)
 
-    # over write __dir__ to include every method for the class
+    # over write __dir__ to GetAttr.__dir__: print out all dr, dt and _xtra together
     def __dir__(self): return custom_dir(self, self._xtra)
 
 

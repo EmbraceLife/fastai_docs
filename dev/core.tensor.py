@@ -14,7 +14,10 @@ def tensor(x, *rest):
         return res.long()
     return res
 
-test_eq(tensor(array([1,2,3])), torch.tensor([1,2,3]))
-test_eq(tensor(1,2,3), torch.tensor([1,2,3]))
+# to pdb
 tensor(array([1,2,3]))
 tensor(1,2,3)
+
+# nb
+test_eq(tensor(array([1,2,3])), torch.tensor([1,2,3]))
+test_eq(tensor(1,2,3), torch.tensor([1,2,3]))

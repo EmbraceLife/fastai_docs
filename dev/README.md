@@ -32,3 +32,12 @@ The practical usage of custom_dir and GetAttr
 [core.custom_dir, core.GetAttr](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.getattr.py)
 > 1. enable a subclass to take all its methods into its `__dir__` using `custom_dir`
 > 2. access additional methods from `_xtra` using `__getattr__`
+
+[core.is_iter](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.is_iter.py)
+> to check anything is iterable or not, but Rank 0 tensors in PyTorch is not iterable
+
+[core.coll_repr](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.coll_repr.py)
+> to print out a collection under 10 items
+
+[core._listify](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core._listify.py)
+> turn everything into a list
