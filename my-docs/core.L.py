@@ -12,10 +12,6 @@ def _mask2idxs(mask):
     if isinstance(mask[0],bool): return [i for i,m in enumerate(mask) if m]
     return [int(i) for i in mask]
 
-mask = (3,)
-mask = (3,5)
-_mask2idxs(mask)
-
 
 # to make sure L(instance_L) returns the same instance
 @newchk

@@ -41,3 +41,9 @@ The practical usage of custom_dir and GetAttr
 
 [core._listify](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core._listify.py)
 > turn everything into a list
+
+[core._mask2idxs](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core._mask2idxs.py)
+> make indexes or binary indexes
+
+[core.L](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.L.py)
+> the most easy-to-use and powerful list class with all the utils needed
