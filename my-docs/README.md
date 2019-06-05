@@ -3,20 +3,20 @@
 - [Fastai-v2 Docs on Each Item](#fastai-v2-docs-on-each-item)
   - [key terms to note](#key-terms-to-note)
   - [local.core module](#localcore-module)
-    - [newchk](#newchk)
-    - [patch](#patch)
-    - [chk](#chk)
-    - [ls](#ls)
-    - [tensor](#tensor)
-    - [tensor.ndim](#tensorndim)
-    - [add_docs](#add_docs)
-    - [docs](#docs)
-    - [custom_dir, GetAttr](#custom_dir-getattr)
-    - [is_iter](#is_iter)
-    - [coll_repr](#coll_repr)
+    - [`newchk`](#newchk)
+    - [`patch`](#patch)
+    - [`chk`](#chk)
+    - [`ls`](#ls)
+    - [`tensor`](#tensor)
+    - [`tensor.ndim`](#tensorndim)
+    - [`add_docs`](#add_docs)
+    - [`docs`](#docs)
+    - [`custom_dir`, `GetAttr`](#custom_dir-getattr)
+    - [`is_iter`](#is_iter)
+    - [`coll_repr`](#coll_repr)
     - [`_listify`](#_listify)
     - [`_mask2idxs`](#_mask2idxs)
-    - [L](#l)
+    - [`L`](#l)
 
 <!-- /TOC -->
 # Fastai-v2 Docs on Each Item
@@ -28,50 +28,50 @@
 
 ## local.core module
 
-### newchk
+### `newchk`
 [core.newchk](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.newchk.py)
 > enable a class to create a new instance (normal) or return the input if the input is already an instance (new feature)
 <img src="https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/images/core.newchk.png" alt="newchk" width="700"/>
 
-### patch
+### `patch`
 [core.patch](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.patch.py)
 > enable a function to add itself to the Class of its first parameter
 
-### chk
+### `chk`
 [core.chk](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.chk.py)
 > enable a function to check on its parameters types
 
-### ls
+### `ls`
 [core.ls](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.ls.py)
 > enable a Path object with a new method to check its contents on the immediate level
 
-### tensor
+### `tensor`
 [core.tensor](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.tensor.py)
 > put array-like, list, tuple, or just a few numbers into an tensor
 
-### tensor.ndim
+### `tensor.ndim`
 [core.tensor.ndim](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.tensor.ndim.py)
 > add `ndim` as a property to any tensor object to return num of dimensions
 
-### add_docs
+### `add_docs`
 [core.add_docs](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.add_docs.py)
 > to add docs for Class and methods and report which has no docs yet
 
-### docs
+### `docs`
 [core.docs](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.docs.py)
 > to enable a Class to set up its docs (unfinished by official source yet)
 
 
-### custom_dir, GetAttr
+### `custom_dir`, `GetAttr`
 [core.custom_dir, core.GetAttr](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.getattr.py)
 > 1. enable a subclass to take all its methods into its `__dir__` using `custom_dir`
 > 2. access additional methods from `_xtra` using `__getattr__`
 
-### is_iter
+### `is_iter`
 [core.is_iter](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.is_iter.py)
 > to check anything is iterable or not, but Rank 0 tensors in PyTorch is not iterable
 
-### coll_repr
+### `coll_repr`
 [core.coll_repr](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.coll_repr.py)
 > to print out a collection under 10 items
 
@@ -83,6 +83,6 @@
 [core._mask2idxs](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core._mask2idxs.py)
 > make indexes or binary indexes
 
-### L
+### `L`
 [core.L](https://github.com/EmbraceLife/fastai_docs/blob/my-v2/my-docs/core.L.py)
 > the most easy-to-use and powerful list class with all the utils needed
