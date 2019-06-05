@@ -28,6 +28,7 @@ class Callback():
         return camel2snake(name or 'callback')
 
     def __call__(self, event_name): getattr(self, event_name, noop)()
+    def __repr__(self): return self.__class__.__name__
 
     _docs=dict(__call__="Call `self.{event_name}` if it's defined",
               __getattr__="Passthrough to get the attributes of `self.learn`",
@@ -165,9 +166,9 @@ class Learner():
         self.n_epoch,self.loss = n_epoch,tensor(0.)
         self('begin_fit')
 
-    def do_epoch_train(self, epoch):
+    def do_epoch_train(self):
         "Execute the training part of the `epoch`-th epoch"
-        self.epoch,self.dl = epoch,self.data.train_dl
+        self.dl = self.data.train_dl
         try:
             self('begin_train')
             self.all_batches()
@@ -177,10 +178,9 @@ class Learner():
     def do_epoch_validate(self):
         "Execute the validation part of an epoch"
         try:
+            self.dl = self.data.valid_dl
             self('begin_validate')
-            with torch.no_grad():
-                self.dl = self.data.valid_dl
-                self.all_batches()
+            with torch.no_grad(): self.all_batches()
         except CancelValidException: self('after_cancel_validate')
         finally:                     self('after_validate')
 
@@ -193,11 +193,11 @@ class Learner():
                 self.do_begin_fit(n_epoch)
                 for epoch in range(n_epoch):
                     try:
-                        self('begin_epoch')
-                        self.do_epoch_train(epoch)
+                        self.epoch=epoch;          self('begin_epoch')
+                        self.do_epoch_train()
                         self.do_epoch_validate()
-                    except CancelEpochException: self('after_cancel_epoch')
-                    finally:                     self('after_epoch')
+                    except CancelEpochException:   self('after_cancel_epoch')
+                    finally:                       self('after_epoch')
 
             except CancelFitException: self('after_cancel_fit')
             finally:                   self('after_fit')
@@ -315,6 +315,9 @@ class AvgSmoothLoss(Metric):
 
 from fastprogress.fastprogress import format_time
 
+def _maybe_item(t):
+    return t.item() if t.numel()==1 else t
+
 class Recorder(Callback):
     order = 20
     "Callback that registers statistics (lr, loss and metrics) during training"
@@ -329,7 +332,7 @@ class Recorder(Callback):
         if self.train_metrics: names = [f'train_{n}' for n in names] + [f'valid_{n}' for n in names]
         else:                  names = ['train_loss', 'valid_loss'] + names[1:]
         if self.add_time: names.append('time')
-        self.metric_names = names
+        self.metric_names = ['epoch']+names
         self.smooth_loss.reset()
 
     def after_batch(self):
@@ -345,19 +348,19 @@ class Recorder(Callback):
         "Set timer if `self.add_time=True`"
         self.cancel_train,self.cancel_valid = False,False
         if self.add_time: self.start_epoch = time.time()
-        self.log = []
+        self.log = [getattr(self, 'epoch', 0)]
 
     def begin_train   (self): [m.reset() for m in self._train_mets]
-    def after_train   (self): self.log += [m.value for m in self._train_mets]
+    def after_train   (self): self.log += [_maybe_item(m.value) for m in self._train_mets]
     def begin_validate(self): [m.reset() for m in self._valid_mets]
-    def after_validate(self): self.log += [m.value for m in self._valid_mets]
+    def after_validate(self): self.log += [_maybe_item(m.value) for m in self._valid_mets]
 
     def after_cancel_train(self):    self.cancel_train = True
     def after_cancel_validate(self): self.cancel_valid = True
 
     def after_epoch(self):
         "Store and log the loss/metric values"
-        self.values.append(self.log.copy())
+        self.values.append(self.log[1:].copy())
         if self.add_time: self.log.append(format_time(time.time() - self.start_epoch))
         self.logger(self.log)
 
