@@ -18,7 +18,7 @@ def _mask2idxs(mask):
     2. if the first item of `mask` is `bool`, then
         a. enumerate the mask to spit out (index, value) one at a time
         b. if a value is True, then put the index into a list
-        c. return the list 
+        c. return the list
     3. if not `bool`,
         a. loop through the mask item and make them a list of integer
         b. return the list
@@ -32,3 +32,15 @@ list(enumerate(mask))
 _mask2idxs(mask)
 mask = ['0', '4', '1', '9']
 _mask2idxs(mask)
+
+from local.core import L
+
+def mask2idxs(mask):
+    "Convert bool mask or index list to index `L`"
+    return L(_mask2idxs(mask))
+
+mask = [True, False, True]
+list(enumerate(mask))
+mask2idxs(mask)
+mask = ['0', '4', '1', '9']
+mask2idxs(mask)
