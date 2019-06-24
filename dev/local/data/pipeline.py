@@ -144,88 +144,6 @@ class Pipeline():
         o = compose_tfms(o, self.fs[self.t_idx:], func_nm='decode', reverse=True, filt=filt)
         return self.t_show.show(o, ctx=ctx, **kwargs)
 
-<<<<<<< HEAD
-def make_tfm(tfm):
-    "Create a `Pipeline` (if `tfm` is listy) or a `Transform` otherwise"
-    if isinstance(tfm,Pipeline): return tfm
-<<<<<<< HEAD
-    return Pipeline(tfm) if is_listy(tfm) else Transform.create(tfm)
-
-@docs
-class TfmdList(GetAttr):
-    "A transform applied to a collection of `items`"
-    _xtra = 'decode __call__ show assoc'.split()
-
-    def __init__(self, items, tfm, do_setup=True):
-        self.items = L(items)
-        self.default = self.tfm = make_tfm(tfm)
-        if do_setup: self.setup()
-
-    def __getitem__(self, i):
-        "Transformed item(s) at `i`"
-        its = self.items[i]
-        return its.mapped(self.tfm) if is_iter(i) else self.tfm(its)
-
-    def decode_batch(self, b, **kwargs):
-        "Decode `b`, a list of lists of pipeline outputs (i.e. output of a `DataLoader`)"
-        transp = L(zip(*L(b)))
-        return transp.mapped(self.decode, **kwargs).zipped()
-
-    def setup(self): getattr(self.tfm,'setup',noop)(self)
-    def subset(self, idxs): return self.__class__(self.items[idxs], self.tfm, do_setup=False)
-    def decode_at(self, idx): return self.decode(self[idx])
-    def show_at(self, idx): return self.show(self[idx])
-    def __eq__(self, b): return all_equal(self, b)
-    def __len__(self): return len(self.items)
-    def __iter__(self): return (self[i] for i in range_of(self))
-    def __repr__(self): return f"{self.__class__.__name__}: {self.items}\ntfms - {self.tfm}"
-
-    _docs = dict(setup="Transform setup with self",
-                 decode_at="Decoded item at `idx`",
-                 show_at="Show item at `idx`",
-                 subset="New `TfmdList` that only includes items at `idxs`")
-
-class TfmOver(Transform):
-    "Create tuple containing each of `tfms` applied to each of `o`"
-    def __init__(self, tfms=None):
-        if tfms is None: tfms = [None]
-        self.activ,self.tfms = None,L(tfms).mapped(Pipeline)
-
-    def __call__(self, o, *args, **kwargs):
-        "List of output of each of `tfms` on `o`"
-        if self.activ is not None: return self.tfms[self.activ](o[self.activ], *args, **kwargs)
-        return [t(p, *args, **kwargs) for p,t in zip(o,self.tfms)]
-
-    def show(self, o, ctx=None, **kwargs):
-        "Show result of `show` from each of `tfms`"
-        for p,t in zip(o,self.tfms): ctx = t.show(p, ctx=ctx, **kwargs)
-        return ctx
-
-    def decode(self, o, **kwargs): return [t.decode(p, **kwargs) for p,t in zip(o,self.tfms)]
-    def __repr__(self): return f'TfmOver({self.tfms})'
-
-    def setups(self, o=None):
-        "Setup each of `tfms` independently"
-        for i,tfm in enumerate(self.tfms):
-            self.activ = i
-            tfm.setup(o)
-        self.activ=None
-
-    @property
-    def assoc(self): return self.tfms.attrgot('assoc')
-
-    @classmethod
-    def piped(cls, tfms=None, final_tfms=None):
-        "`Pipeline` that duplicates input, then maps `TfmOver` over `tfms`, optionally followed by any `final_tfms`"
-        tfms = L(ifnone(tfms,[None]))
-        init_tfm = partial(replicate,match=tfms)
-        return Pipeline([init_tfm,cls(tfms)] + _set_tupled(final_tfms))
-
-    xt,yt = add_props(lambda i,x:x.tfms[i])
-=======
-    return Pipeline(tfm) if is_listy(tfm) else Transform.create(tfm)
->>>>>>> upstream/master
-=======
 add_docs(Pipeline,
          __call__="Compose `__call__` of all `tfms` on `o`",
          decode="Compose `decode` of all `tfms` on `i`",
@@ -262,6 +180,8 @@ class TfmdList(GetAttr):
                  show_at="Show item at `idx`",
                  subset="New `TfmdList` that only includes items at `idxs`")
 
+def _maybe_flat(t): return t[0] if len(t) == 1 else t
+
 class TfmdDS(TfmdList):
     def __init__(self, items, tfms=None, tuple_tfms=None, do_setup=True):
         if tfms is None: tfms = [None]
@@ -271,13 +191,15 @@ class TfmdDS(TfmdList):
         if do_setup: self.setup()
 
     def __getitem__(self, i, filt=None):  #TODO add filt
-        its = [it.__getitem__(i, filt=filt) for it in self.tfmd_its]
-        if is_iter(i): return L(zip(*L(its))).mapped(self.tuple_tfms, filt=filt)
+        its = _maybe_flat([it.__getitem__(i, filt=filt) for it in self.tfmd_its])
+        if is_iter(i):
+            if len(self.tfmd_its) > 1: its = zip(*L(its))
+            return L(its).mapped(self.tuple_tfms, filt=filt)
         return self.tuple_tfms(its, filt=filt)
 
     def decode(self, o, filt=None):
         o = self.tuple_tfms.decode(o, filt=filt)
-        return [it.decode(o_, filt=filt) for o_,it in zip(o,self.tfmd_its)]
+        return _maybe_flat([it.decode(o_, filt=filt) for o_,it in zip(o,self.tfmd_its)])
 
     def show(self, o, ctx=None, filt=None, **kwargs):
         if self.tuple_tfms.t_show is not None: return self.tuple_tfms.show(o, ctx=ctx, **kwargs)
@@ -304,9 +226,4 @@ add_docs(TfmdDS,
          show="Show item `o` in `ctx`",
          decode_batch="Call `self.decode` on all elements of `b`",
          setup="Go through the transforms in order and call their potential setup on `items`",
-<<<<<<< HEAD
-         setup_types="Go through the transforms in order and propagate the type starting with `t`")
->>>>>>> master
-=======
          subset="New `TfmdDS` that only includes items at `idxs`")
->>>>>>> master
