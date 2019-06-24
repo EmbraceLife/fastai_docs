@@ -40,6 +40,7 @@ def get_class(nm, *fld_names, sup=None, doc=None, funcs=None, **flds):
 
     Note:
     - often you will use `mk_class` instead, as it adds class to your module
+    - although `t` won't display any method, but in ipython `t.` + tab will show all methods
     """
     for f in fld_names: flds[f] = None
     for f in L(funcs): flds[f.__name__] = f
@@ -49,10 +50,6 @@ def get_class(nm, *fld_names, sup=None, doc=None, funcs=None, **flds):
     def _init(self, *args, **kwargs):
         for i,v in enumerate(args): setattr(self, fld_names[i], v)
         for k,v in kwargs.items(): setattr(self,k,v)
-
-    # def _repr(self):
-    #     return '\n'.join(f'{o}: {getattr(self,o)}' for o in set(dir(self))
-    #                      if not o.startswith('_') and not isinstance(getattr(self,o), types.MethodType))
 
     def _repr(self):
         return '\n'.join(f'{o}: {getattr(self,o)}' for o in set(dir(self))
@@ -64,16 +61,14 @@ def get_class(nm, *fld_names, sup=None, doc=None, funcs=None, **flds):
     if doc is not None: res.__doc__ = doc
     return res
 
-############
-# how to create a class and a method in two lines of code
 
-###########
 
+# make bar func as a property to the instance
 _t = get_class('_t', 'a'); _t
-t = _t(b='yes', bar=lambda x: x+1);t
-isinstance(t.bar, types.MethodType)
+t = _t(b='yes', bar=lambda x: x+1);t 
+t.bar(5)
 
-
-def bar(x): return x+1
-t = _t(b='yes', bar=bar);t
-isinstance(t.bar, types.MethodType)
+# make bar func as a method not property to the class
+_t = get_class('_t', 'a', bar=lambda self, x: x+self.a); _t
+t1 = _t(5, b='yes');t1 
+t1.bar(5)

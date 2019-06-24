@@ -11,7 +11,7 @@ def wrap_class(nm, *fld_names, sup=None, doc=None, funcs=None, **flds):
     - we have `get_class(...)` to create a new class with specified attrs
     - we have `mk_class(...)` to create and add new class onto caller's module
     - we have `@patch` to add a new method to a class anywhere in an experiment
-    - why not have @wrap_class to create, add onto module and create a method whenever and wherever we like very super fast?
+    - why not have @wrap_class to create, add onto module and create a method whenever and wherever we like very fast?
 
     how to use wrap_class(...)?
     - `@wrap_class(...)`: as if we are using `mk_class(...)`
@@ -25,12 +25,14 @@ def wrap_class(nm, *fld_names, sup=None, doc=None, funcs=None, **flds):
         return f
     return _inner
 
-# how to create a class and a method in two lines of code
-# def bar1(x): return x+1
-@wrap_class('_P', a=2,) # say you want a class called '_t' with attr 'a=2'
-def bar(self,x): return x+1 # say you want this class has a method `bar`
+# Caution: the func above shall not be executed, 
+# if you did, please run `del wrap_class` and `from local.core import *` again
+# as the `wrap_class` defined in the __main__ won't work properly
 
-t = _P(b='new attr', c=int); t # yeah, __init__ can add additional attrs too
-_P
-isinstance(t.bar, types.MethodType)
-# isinstance(t.bar1, types.MethodType)
+
+def bar1(self, x): return x+2 # add methods before @wrap_class
+bar2 = lambda self, x: self.a + x # self is usually added
+@wrap_class('_P', 'alpha', a=2, bar1=bar1, bar2=bar2) # add methods in decorator
+def bar(self,x): return x+1 # add methods after decorator
+t = _P(100, b='new attr', c=int); t # 100 assigned to 'alpha'
+
