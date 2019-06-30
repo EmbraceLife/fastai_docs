@@ -1,11 +1,13 @@
 from local.test import *
 from local.imports import *
 from local.notebook.showdoc import show_doc
-from local.core import L
+from local.core import *
+
+show_doc(setify)
 
 def setify(o):
     """
-    purpose:
+    why setify(..):
     1. you may want to turn everything into a set
     2. if it is already a set, just return it
     3. if not, make it a L, then turn it to set

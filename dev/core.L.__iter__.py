@@ -15,6 +15,7 @@ def __iter__(cls:L):
 
     how to use it?
     - `g = t.__iter__()`
+    - `next(g)`
 
     how to create __iter__
     - `(self[i] for i in range(len(self)))` is typical way of making generator
@@ -24,21 +25,10 @@ def __iter__(cls:L):
     - L.__iter__ is responsible for creating a generator
     """
     return (cls[i] for i in range(len(cls)))
-###############################################################################
-t = L([1,2,3])
-hasattr(t, '__iter__')
-g = t.__iter__();g
-next(g)
-iter(t)
-module(iter)
-module(t.__iter__)
 
-###############################################################################
-##### what if
-del L.__iter__
-t
-hasattr(t, '__iter__') # L.__iter__ is gone
-for i in t: print(i) # looping is ok
-list(map(str, t)) # looping is ok
-g = iter(t);g # iter == L.__iter__ same effect
+
+cls = L([1,2,3])
+hasattr(cls, '__iter__')
+g = cls.__iter__();g
 next(g)
+
