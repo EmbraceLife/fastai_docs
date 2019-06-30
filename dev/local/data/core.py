@@ -3,7 +3,7 @@
 __all__ = ['get_files', 'FileGetter', 'image_extensions', 'get_image_files', 'ImageGetter', 'RandomSplitter',
            'GrandparentSplitter', 'parent_label', 'RegexLabeller', 'show_image', 'show_titled_image',
            'show_image_batch', 'TensorImage', 'Categorize', 'String', 'mk_string', 'get_samples', 'TfmdDL', 'Cuda',
-           'TensorMask', 'ByteToFloatTensor', 'Normalize', 'DataBunch']
+           'TensorMask', 'ByteToFloatTensor', 'Normalize', 'broadcast_vec', 'DataBunch']
 
 from ..imports import *
 from ..test import *
@@ -88,6 +88,7 @@ def show_image(im, ax=None, figsize=None, title=None, ctx=None, **kwargs):
     if isinstance(im,Tensor):
         im = to_cpu(im)
         if im.shape[0]<5: im=im.permute(1,2,0)
+    elif not isinstance(im,np.ndarray): im=array(im)
     # Handle 1-channel images
     if im.shape[-1]==1: im=im[...,0]
     ax.imshow(im, **kwargs)
@@ -156,14 +157,15 @@ class TfmdDL(GetAttr):
         self.tfms.setup(self)
 
     def __len__(self): return len(self.dl)
-    def __iter__(self): return map(self.tfms, self.dl)
+    def __iter__(self): return (self.tfms(b, filt=getattr(self.dataset, 'filt', None)) for b in self.dl)
     def one_batch(self): return next(iter(self))
-    def decode(self, b): return getattr(self.dataset,'decode_batch',noop)(self.tfms.decode(b))
+    def decode(self, b):
+        return getattr(self.dataset,'decode_batch',noop)(self.tfms.decode(b, filt=getattr(self.dataset, 'filt', None)))
 
     def show_batch(self, b=None, max_rows=1000, ctxs=None, **kwargs):
         "Show `b` (defaults to `one_batch`), a list of lists of pipeline outputs (i.e. output of a `DataLoader`)"
         if b is None: b=self.one_batch()
-        b = self.tfms.decode(b)
+        b = self.tfms.decode(b, filt=getattr(self.dataset, 'filt', None))
         if ctxs is None: ctxs = [None] * len(b[0] if is_iter(b[0]) else b)
         for o,ctx in zip(get_samples(b, max_rows),ctxs): self.dataset.show(o, ctx=ctx)
 
@@ -204,6 +206,13 @@ class Normalize(Transform):
     def decodes(self, x:TensorImage): return (x*self.std ) + self.mean
 
     _docs=dict(encodes="Normalize batch", decodes="Denormalize batch")
+
+def broadcast_vec(dim, ndim, *t, cuda=True):
+    "Make a vector broadcastable over `dim` (out of `ndim` total) by prepending and appending unit axes"
+    v = [1]*ndim
+    v[dim] = -1
+    f = to_device if cuda else noop
+    return [f(tensor(o).view(*v)) for o in t]
 
 @docs
 class DataBunch(GetAttr):
