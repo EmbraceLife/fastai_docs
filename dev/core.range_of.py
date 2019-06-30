@@ -1,7 +1,7 @@
 from local.test import *
 from local.imports import *
 from local.notebook.showdoc import show_doc
-
+from local.core import *
 #########################
 # `range_of(x)` = return a list of indexes for `x`
 
