@@ -34,7 +34,14 @@ torch.cuda.set_device(int(os.environ.get('DEFAULT_GPU') or 0))
 #%%
 #export
 def get_func(t, name, *args, **kwargs):
+    """
     "Get the `t.name` (potentially partial-ized with `args` and `kwargs`) or `noop` if not defined"
+
+    why get_func(...)
+    1. sometimes getting the plain method, t.name is not enough, 
+    1. we want t.name with specified args, kwargs
+    2. why not allow get_func(...) to do both
+    """
     f = getattr(t, name, noop)
     return f if not (args or kwargs) else partial(f, *args, **kwargs)
 
@@ -55,7 +62,14 @@ test_eq(a, [1,2])
 #%%
 #export
 def show_title(o, ax=None, ctx=None):
+    """
     "Set title of `ax` to `o`, or print `o` if `ax` is `None`"
+
+    why show_title(...)
+    1. if we really got an image, we can set `o` as the image's title
+    1. if no image, then just print out `o`
+    2. `ax` and `ctx` seem used interchangeably
+    """
     ax = ifnone(ax,ctx)
     if ax is None: print(o)
     else: ax.set_title(o)
@@ -72,11 +86,57 @@ test_stdout(lambda: show_title("title"), "title")
 #%%
 #export
 class Func():
+    """
+    "Basic wrapper around a `name` with `args` and `kwargs` 
+    to call on a given type"
+
+    why Func():
+    1. we can get a method easily like `math.pow`
+    2. but what if we want the method to be `math.pow(x, 2)`
+    3. what if we want to get a list [math.pow(x,2), torch.pow(x, 2)]
+    4. how cool if we can get it by Func('pow', a=2)([math, torch])
+
+    why __init__(self, name, *args, **kwargs)
+    1. we get method name and its args, kwargs ready
+
+    why __repr__(self)
+    1. we just want to see method name and its args, kwargs
+
+    why _get(self, t)
+    1. we want to use get_func(...) to get method flexibly with args and kwargs
+
+    why __call__(self, t)
+    1. we want Func('pow', args, kwargs)(t) to get us:
+        a. either t.pow with args, and kwargs
+        b. or t1.pow(x, args, kwargs), t2.pow(x, args, kwargs)...
+    """
     "Basic wrapper around a `name` with `args` and `kwargs` to call on a given type"
-    def __init__(self, name, *args, **kwargs): self.name,self.args,self.kwargs = name,args,kwargs
-    def __repr__(self): return f'sig: {self.name}({self.args}, {self.kwargs})'
-    def _get(self, t): return get_func(t, self.name, *self.args, **self.kwargs)
-    def __call__(self,t): return L(t).mapped(self._get) if is_listy(t) else self._get(t)
+    def __init__(self, name, *args, **kwargs): 
+        """
+        why __init__(...)
+        1. we get method name and its args, kwargs ready
+        """
+        self.name,self.args,self.kwargs = name,args,kwargs
+    def __repr__(self): 
+        """
+        why __repr__(self)
+        1. we just want to see method name and its args, kwargs
+        """
+        return f'sig: {self.name}({self.args}, {self.kwargs})'
+    def _get(self, t): 
+        """
+        why _get(self, t)
+        1. we want to use get_func(...) to get method flexibly with args and kwargs
+        """
+        return get_func(t, self.name, *self.args, **self.kwargs)
+    def __call__(self,t): 
+        """
+        why __call__(self, t)
+        1. we want Func('pow', args, kwargs)(t) to get us:
+            a. either t.pow with args, and kwargs
+            b. or t1.pow(x, args, kwargs), t2.pow(x, args, kwargs)...
+        """
+        return L(t).mapped(self._get) if is_listy(t) else self._get(t)
 
 #%% [markdown]
 # You can call the `Func` object on any module name or type, even a list of types. It will return the corresponding function (with a default to `noop` if nothing is found) or list of functions.
@@ -97,6 +157,17 @@ for t in tst: test_eq(t.keywords, {'a': 2})
 #%%
 #export
 class _Sig():
+    """
+    Sig = _Sig()
+    `Sig` is just sugar-syntax to create a `Func` object more easily with the syntax `Sig.name(*args, **kwargs)`.
+
+    why _Sig():
+    1. because we want the use of Func(...) much easier
+    1. how about use it in the following way:
+        a. Sig.sqrt()(math)(4)
+        b. Sig.pow()(math)(4,2)
+        c. use , to allow vscode to display signiture
+    """
     def __getattr__(self,k):
         def _inner(*args, **kwargs): return Func(k, *args, **kwargs)
         return _inner
