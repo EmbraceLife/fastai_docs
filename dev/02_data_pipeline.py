@@ -64,7 +64,7 @@ test_eq(a, [1,2])
 def show_title(o, ax=None, ctx=None):
     """
     "Set title of `ax` to `o`, or print `o` if `ax` is `None`"
-
+    
     why show_title(...)
     1. if we really got an image, we can set `o` as the image's title
     1. if no image, then just print out `o`
