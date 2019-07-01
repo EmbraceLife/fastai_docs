@@ -58,7 +58,6 @@ class Func():
     1. we want Func('pow', args, kwargs)(t) to get us:
         a. either t.pow with args, and kwargs
         b. or t1.pow(x, args, kwargs), t2.pow(x, args, kwargs)...
-
     """
     def __init__(self, name, *args, **kwargs): 
         """
@@ -88,6 +87,17 @@ class Func():
         return L(t).mapped(self._get) if is_listy(t) else self._get(t)
 
 class _Sig():
+    """
+    Sig = _Sig()
+    `Sig` is just sugar-syntax to create a `Func` object more easily with the syntax `Sig.name(*args, **kwargs)`.
+
+    why _Sig():
+    1. because we want the use of Func(...) much easier
+    1. how about use it in the following way:
+        a. Sig.sqrt()(math)(4)
+        b. Sig.pow()(math)(4,2)
+        c. use , to allow vscode to display signiture
+    """
     def __getattr__(self,k):
         def _inner(*args, **kwargs): return Func(k, *args, **kwargs)
         return _inner
