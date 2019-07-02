@@ -661,9 +661,12 @@ class Pipeline():
                 if not isinstance(f,Transform): f = Transform(f)
                 f.accept_types(t)
                 self.fs.append(f)
-                if self.t_show is None and hasattr(t, 'show'): self.t_idx,self.t_show = i,t
                 t = f.return_type()
+<<<<<<< HEAD
             if self.t_show is None and hasattr(t, 'show'): self.t_idx,self.t_show = i+1,t # to be deleted I think
+=======
+                if self.t_show is None and hasattr(t, 'show'): self.t_idx,self.t_show = i,t
+>>>>>>> master
             self.final_t = t
 
     def new(self, t=None): return Pipeline(self, t)
