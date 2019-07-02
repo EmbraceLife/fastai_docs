@@ -561,6 +561,7 @@ def transform(cls):
     why transform(cls)?
     1. why not have a very easy way to add additional encodes and decodes?
 
+    How to use it?
     Examples 
     from local.imports import *
     from local.core import *
@@ -584,14 +585,74 @@ def transform(cls):
     return _inner
 
 def compose_tfms(x, tfms, func_nm='__call__', reverse=False, **kwargs):
+    """
     "Apply all `func_nm` attribute of `tfms` on `x`, maybe in `reverse` order"
+
+    Why compose_tfms(x, tfms, func_nm='__call__', reverse=False, **kwargs)
+    1. after knowing what each tfm can do on x, we need them to work together on x
+    2. so we want to order tfms in a line for execution upon x
+    3. with __call__, we can order encodes of tfms in a line to transform x upon each other
+    4. with 'decode', we can order decodes of tfms in a line to reverse x back to original state
+
+    Examples:
+    class _AddOne(Transform):
+        def encodes(self, x): return x+1
+        def decodes(self, x): return x-1
+    tfms = [_AddOne(), Transform(torch.sqrt)]
+    t = compose_tfms(tensor([3.]), tfms)
+    compose_tfms(t, tfms, 'decodes') # tensor([1.]))
+    compose_tfms(tensor([4.]), tfms, reverse=True) # tensor([3.]))
+    """
     if reverse: tfms = reversed(tfms)
     for tfm in tfms: x = getattr(tfm,func_nm,noop)(x, **kwargs)
     return x
 
 class Pipeline():
+    """
     "A pipeline of composed (for encode/decode) transforms, setup with types"
+
+    Why Pipeline()?
+    1. given compose_tfms can order and stack tfms together and apply onto x, 
+    2. what else can Pipeline(funcs, t) do for us?
+    """
     def __init__(self, funcs=None, t=None):
+        """
+        Why __init__(self, funcs=None, t=None)?
+
+        What does __init__ do?
+        - basically to construct a Pipeline object
+            - provide funcs for transformation
+            - provide `t` for tfms selection?
+
+        How exactly we build a Pipeline object?
+        - if we build an empty pipeline object with `Pipeline()`, 
+            - then the object has the following attributes
+            - `self.fs` as [], and `self.t_show`, `self.final_t` as None
+        - if we have a few funcs (Transform objects or just funcs), we enumerate through the funcs:
+            - we will sort funcs by pushing into `self.fs` by their `order` value
+            - make sure all funcs are Transform objects
+            - trace `self.t`, `self.t_idx`, `self.t_show` with each func along the execution order line
+            - finally trace the `self.final_t` type
+
+        Examples ====>
+        from local.imports import *
+        from local.core import *
+        from local.data.pipeline import *
+        from multimethod import multimeta,DispatchError
+        # example 1
+        pipe1 = Pipeline()
+        # example 2
+        class String():
+            @staticmethod
+            def show(o, ctx=None, **kwargs): return show_title(str(o), ctx=ctx)
+        class floatTfm(Transform):
+            def encodes(self, x): return float(x)
+            def decodes(self, x): return int(x)
+        float_tfm=floatTfm()
+        def neg(x) -> String: return -x
+        neg_tfm = Transform(neg, neg) 
+        pipe2 = Pipeline([neg_tfm, float_tfm]) # stack two tfms inside
+        """
         if isinstance(funcs, Pipeline): funcs = funcs.fs
         self.fs,self.t_show = [],None
         if len(L(funcs)) == 0: self.final_t = t
@@ -602,7 +663,7 @@ class Pipeline():
                 self.fs.append(f)
                 if self.t_show is None and hasattr(t, 'show'): self.t_idx,self.t_show = i,t
                 t = f.return_type()
-            if self.t_show is None and hasattr(t, 'show'): self.t_idx,self.t_show = i+1,t
+            if self.t_show is None and hasattr(t, 'show'): self.t_idx,self.t_show = i+1,t # to be deleted I think
             self.final_t = t
 
     def new(self, t=None): return Pipeline(self, t)
@@ -615,13 +676,45 @@ class Pipeline():
             if hasattr(t, 'setup'):    t.setup(items)
             if not t.add_before_setup: self.fs.append(t)
 
-    def __call__(self, o, filt=None): return compose_tfms(o, self.fs, filt=filt)
-    def decode  (self, i, filt=None): return compose_tfms(i, self.fs, func_nm='decode', reverse=True, filt=filt)
+    def __call__(self, o, filt=None): 
+        """
+        What does __call__(self, o, filt=None) do?
+        - basically we do compose_tfms with self.fs onto o
+        - if self.fs is empty, just do noop_tfms
+
+        Examples ==> continue from __init__ examples
+        t1=pipe1(1)
+        t2=pipe2(2)
+        """
+        return compose_tfms(o, self.fs, filt=filt)
+    def decode  (self, i, filt=None): 
+        """
+        Why decode  (self, i, filt=None)
+        - simple to reverse encodes or call, for viewing the original state of data
+        - it is to run __call__ with func_name `decode` and reverse the funcs order
+
+        Examples: ===> continue from __init__ and __call__ examples
+        pipe2.decode(t2)
+        """
+        return compose_tfms(i, self.fs, func_nm='decode', reverse=True, filt=filt)
     #def __getitem__(self, x): return self(x)
     #def decode_at(self, idx): return self.decode(self[idx])
     #def show_at(self, idx):   return self.show(self[idx])
 
     def show(self, o, ctx=None, filt=None, **kwargs):
+        """
+        why show(self, o, ctx=None, filt=None, **kwargs):
+        - upon decode, we use show to present the original state in a more appropriate way
+
+        how to do it?
+        - if no show type available, then just do decode, that's it
+        - otherwise, we only decode the encoded data back to the point where show type begin 
+            - not all the way to the starting point
+        - display the decoded data
+
+        Examples: ===> built from above examples
+        pipe2.show(t2)
+        """
         if self.t_show is None: return self.decode(o, filt=filt)
         o = compose_tfms(o, self.fs[self.t_idx:], func_nm='decode', reverse=True, filt=filt)
         return self.t_show.show(o, ctx=ctx, **kwargs)
