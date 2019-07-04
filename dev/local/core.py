@@ -894,16 +894,6 @@ def to_float(b):
 # None: True if available; True: error if not availabe; False: use CPU
 defaults.use_cuda = None
 
-<<<<<<< HEAD
-def to_device(b, device=defaults.device):
-    """
-    "Recursively put `b` on `device`."
-
-    purpose:
-    0. what if we want to put everything on the default 
-    1. Recursively put `b` on defaults.device
-    """
-=======
 def default_device(use_cuda=-1):
     "Return or set default device; `use_cuda`: None - CUDA if available; True - error if not availabe; False - CPU"
     if use_cuda != -1: defaults.use_cuda=use_cuda
@@ -912,9 +902,14 @@ def default_device(use_cuda=-1):
     return torch.device(torch.cuda.current_device()) if use else torch.device('cpu')
 
 def to_device(b, device=None):
+    """
     "Recursively put `b` on `device`."
+
+    purpose:
+    0. what if we want to put everything on the default 
+    1. Recursively put `b` on defaults.device
+    """
     if device is None: device=default_device()
->>>>>>> master
     def _inner(o): return o.to(device, non_blocking=True) if isinstance(o,Tensor) else o
     return apply(_inner, b)
 

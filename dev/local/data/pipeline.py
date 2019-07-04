@@ -877,11 +877,8 @@ add_docs(TfmdDS,
          show="Show item `o` in `ctx`",
          setup="Go through the transforms in order and call their potential setup on `items`",
          subset="New `TfmdDS` that only includes items at `idxs`")
-<<<<<<< HEAD
-=======
 
 def setattr_parent(o, k, v):
     if getattr(o, 'parent', False): setattr_parent(o.parent, k, v)
     if getattr(o, 'dsrc', False): setattr_parent(o.dsrc, k, v)
     setattr(o, k, v)
->>>>>>> master
