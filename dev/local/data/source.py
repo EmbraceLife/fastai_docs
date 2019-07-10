@@ -6,17 +6,17 @@ from ..imports import *
 from ..test import *
 from ..core import *
 from .core import *
+from .transform import *
 from .pipeline import *
 from ..notebook.showdoc import show_doc
 
 class _FiltTfmdList(TfmdList):
     "Like `TfmdList` but with filters and train/valid attribute, for proper setup"
-    def __init__(self, items, tfms, filts, filt_idx, do_setup=True, parent=None):
+    def __init__(self, items, tfms, filts, filt_idx, do_setup=True, as_item=True):
         self.filts,self.filt_idx = filts,filt_idx
-        super().__init__(items, tfms, do_setup=do_setup, parent=parent)
+        super().__init__(items, tfms, do_setup=do_setup, as_item=as_item)
 
-    def __getitem__(self, i, filt=None): #Has to accept filt because of DataSource.__getitem__ and super behavior
-        return super().__getitem__(i,self.filt_idx[i] if filt is None else filt)
+    def __getitem__(self, i): return self.get(i, self.filt_idx[i])
 
     @property
     def n_subsets(self): return len(self.filts)
@@ -36,30 +36,28 @@ class DataSource(TfmdDS):
         assert all_disjoint(self.filts)
         self.filt_idx = L([None]*len(items))
         for i,f in enumerate(self.filts): self.filt_idx[f] = i
-        if type_tfms is None: type_tfms = [None]
-        self.items = items
-        self.tfmd_its = [_FiltTfmdList(items, t, self.filts, self.filt_idx, do_setup=do_setup, parent=self)
-                         for t in type_tfms]
-        self.__post_init__(items, ds_tfms, do_setup)
+
+        self.items = L(items)
+        self.tls = [_FiltTfmdList(items, t, self.filts, self.filt_idx, do_setup=do_setup)
+                    for t in L(type_tfms)]
+        self._mk_pipeline(ds_tfms, do_setup=do_setup, as_item=False)
 
     @property
     def n_subsets(self): return len(self.filts)
     def len(self,filt): return len(self.filts[filt])
     def subset(self, i): return DsrcSubset(self, i)
     def subsets(self): return map(self.subset, range(self.n_subsets))
+    def __getitem__(self, i): return self.get(i,self.filt_idx[i])
     def __repr__(self):
-        return '\n'.join(map(str,self.subsets())) + f'\ntype tfms - {self.type_tfms}\nds tfms - {self.ds_tfms}'
-    def __getitem__(self, i): return super().__getitem__(i,self.filt_idx[i])
+        return '\n'.join(map(str,self.subsets())) + f'\ntls - {self.tls}\nds tfms - {self.tfms}'
 
-    def databunch(self, tfms=None, bs=16, val_bs=None, shuffle_train=True, sampler=None, batch_sampler=None,
-                  **kwargs):
+    def databunch(self, tfms=None, bs=16, val_bs=None, shuffle_train=True,
+                  sampler=None, batch_sampler=None,  **kwargs):
         n = self.n_subsets-1
         bss = [bs] + [2*bs]*n if val_bs is None else [bs] + [val_bs]*n
         shuffles = [shuffle_train] + [False]*n
-        samplers = sampler if is_listy(sampler) else [sampler]*n
-        bsamplers = batch_sampler if is_listy(batch_sampler) else [batch_sampler]*n
         dls = [TfmdDL(self.subset(i), tfms, b, shuffle=s, sampler=sa, batch_sampler=bsa, **kwargs)
-               for i,(b,s,sa,bsa) in enumerate(zip(bss, shuffles, samplers, bsamplers))]
+               for i,(b,s,sa,bsa) in enumerate(zip(bss, shuffles, L(sampler).cycle(), L(batch_sampler).cycle()))]
         return DataBunch(*dls)
 
     _docs = dict(len="`len` of subset `filt`",
@@ -85,6 +83,7 @@ class DsrcSubset():
     def show     (self, o, **kwargs):    return self.dsrc.show(o, filt=self.filt, **kwargs)
     def show_at  (self, i, **kwargs):    return self.dsrc.show(self[i], filt=self.filt, **kwargs)
     def __len__(self):  return len(self.filts)
+    def __iter__(self): return (self[i] for i in range_of(self.filts))
     def __eq__(self,b): return all_equal(b,self)
     def __repr__(self): return coll_repr(self)
 
